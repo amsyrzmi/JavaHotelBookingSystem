@@ -3,68 +3,82 @@ import java.awt.*;
 import java.sql.*;
 
 public class LoginFrame extends JFrame {
-    private final JTextField userField = new JTextField(12);
-    private final JPasswordField passField = new JPasswordField(12);
+    private final JTextField userField = new JTextField(15);
+    private final JPasswordField passField = new JPasswordField(15);
     private final JLabel status = new JLabel(" ");
+
+    private static final Color DARK_BG    = new Color(30, 30, 30);
+    private static final Color FIELD_BG   = new Color(50, 50, 50);
+    private static final Color TEXT_COLOR = Color.WHITE;
+    private static final Color BTN_BG     = new Color(70, 130, 180);
 
     public LoginFrame() {
         super("Hotel Booking – Login");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(340, 180);
+        setSize(400, 240);
         setLocationRelativeTo(null);
         buildUI();
+        getContentPane().setBackground(DARK_BG);
     }
 
     private void buildUI() {
-        // === Form Panel ===
+        JLabel title = new JLabel("Hotel Booking System", SwingConstants.CENTER);
+        title.setFont(new Font("SansSerif", Font.BOLD, 18));
+        title.setForeground(TEXT_COLOR);
+
+        JLabel userLbl = new JLabel("Username:");
+        JLabel passLbl = new JLabel("Password:");
+        userLbl.setForeground(TEXT_COLOR);
+        passLbl.setForeground(TEXT_COLOR);
+
+        styleField(userField);
+        styleField(passField);
+
         JPanel form = new JPanel(new GridLayout(2, 2, 8, 8));
-        JLabel userLabel = new JLabel("Username:");
-        JLabel passLabel = new JLabel("Password:");
-
-        
-        userLabel.setForeground(Color.WHITE);
-        passLabel.setForeground(Color.WHITE);
-
-        form.setBackground(new Color(30, 30, 30));
-        form.add(userLabel);
+        form.setOpaque(false);
+        form.add(userLbl);
         form.add(userField);
-        form.add(passLabel);
+        form.add(passLbl);
         form.add(passField);
 
-        
-        Color fieldBg = new Color(50, 50, 50);
-        Color border = new Color(80, 80, 80);
-        userField.setBackground(fieldBg);
-        userField.setForeground(Color.WHITE);
-        userField.setCaretColor(Color.WHITE);
-        userField.setBorder(BorderFactory.createLineBorder(border));
-
-        passField.setBackground(fieldBg);
-        passField.setForeground(Color.WHITE);
-        passField.setCaretColor(Color.WHITE);
-        passField.setBorder(BorderFactory.createLineBorder(border));
-
-        
         JButton loginBtn = new JButton("Login");
-        loginBtn.setBackground(new Color(70, 70, 70));
-        loginBtn.setForeground(Color.WHITE);
-        loginBtn.setFocusPainted(false);
-        loginBtn.setBorder(BorderFactory.createEmptyBorder(6, 12, 6, 12));
+        styleButton(loginBtn);
         loginBtn.addActionListener(e -> attemptLogin());
 
-        
         status.setForeground(Color.RED);
-        status.setHorizontalAlignment(JLabel.CENTER);
+        status.setHorizontalAlignment(SwingConstants.CENTER);
 
-        
-        JPanel root = new JPanel(new BorderLayout(8, 8));
-        root.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
-        root.setBackground(new Color(30, 30, 30));
-        root.add(status, BorderLayout.NORTH);
-        root.add(form, BorderLayout.CENTER);
-        root.add(loginBtn, BorderLayout.SOUTH);
+        JPanel box = new JPanel();
+        box.setLayout(new BoxLayout(box, BoxLayout.Y_AXIS));
+        box.setOpaque(false);
+        box.setBorder(BorderFactory.createEmptyBorder(12, 24, 12, 24));
+        box.add(title);
+        box.add(Box.createVerticalStrut(16));
+        box.add(form);
+        box.add(Box.createVerticalStrut(12));
+        box.add(loginBtn);
+        box.add(Box.createVerticalStrut(8));
+        box.add(status);
 
-        setContentPane(root);
+        add(box, BorderLayout.CENTER);
+    }
+
+    private void styleField(JTextField field) {
+        field.setBackground(FIELD_BG);
+        field.setForeground(TEXT_COLOR);
+        field.setCaretColor(TEXT_COLOR);
+        field.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.GRAY),
+                BorderFactory.createEmptyBorder(5, 8, 5, 8)
+        ));
+    }
+
+    private void styleButton(JButton btn) {
+        btn.setBackground(BTN_BG);
+        btn.setForeground(Color.WHITE);
+        btn.setFocusPainted(false);
+        btn.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+        btn.setAlignmentX(Component.CENTER_ALIGNMENT);
     }
 
     private void attemptLogin() {
@@ -85,10 +99,10 @@ public class LoginFrame extends JFrame {
                 logged.createDashboard().setVisible(true);
                 dispose();
             } else {
-                status.setText("Invalid credentials");
+                status.setText("Invalid username or password.");
             }
         } catch (SQLException ex) {
-            status.setText("DB error: " + ex.getMessage());
+            status.setText("Database error.");
             ex.printStackTrace();
         }
     }
